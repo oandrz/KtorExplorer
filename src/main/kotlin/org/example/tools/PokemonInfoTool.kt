@@ -20,7 +20,7 @@ class PokemonInfoTool(
 
     override val descriptor: ToolDescriptor = ToolDescriptor(
         name = "pokemon_info",
-        description = "get every pokemon related information",
+        description = "get every pokemon related information, return in JSON format",
         requiredParameters = listOf(
             ToolParameterDescriptor(
                 name = "initCharacter",

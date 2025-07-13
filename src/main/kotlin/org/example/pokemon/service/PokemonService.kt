@@ -27,7 +27,7 @@ class PokemonService(private val baseUrl: String = "https://pokeapi.co/api/v2") 
      * @param offset Number of Pokemon to skip
      */
     suspend fun getPokemonList(
-        limit: Int = 20,
+        limit: Int = 1000,
         offset: Int = 0
     ): Result<PokemonListResponse> = runCatching {
         client.get("$baseUrl/pokemon") {
