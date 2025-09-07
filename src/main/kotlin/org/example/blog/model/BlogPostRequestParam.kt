@@ -3,11 +3,7 @@ package org.example.blog.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BlogPost(
-    val id: Int,
+data class BlogPostRequestParam(
     val title: String,
     val content: String,
-//    val author: String,
-//    val createdAt: String,
-//    val updatedAt: String? = null
 )

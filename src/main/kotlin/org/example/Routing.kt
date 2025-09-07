@@ -3,8 +3,8 @@ package org.example
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.ext.tool.SayToUser
-import ai.koog.prompt.executor.clients.google.GoogleModels
-import ai.koog.prompt.executor.llms.all.simpleGoogleAIExecutor
+import ai.koog.prompt.executor.clients.openai.OpenAIModels
+import ai.koog.prompt.executor.llms.all.simpleOpenAIExecutor
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -20,6 +20,7 @@ import org.example.todo.TodoService
 import org.slf4j.LoggerFactory
 
 private const val GEMINI_API_KEY = "GEMINI_API_KEY"
+private const val OPEN_AI_API_KEY = "GPT_KEY"
 private const val SYSTEM_PROMPT = """
 You are a helpful assistant.
 Your response MUST be a single valid JSON object, and nothing else.
@@ -72,27 +73,31 @@ private fun Routing.configureAIRouting(pokemonService: PokemonService) {
     route("/ai") {
         // Log the AI endpoint access
         logger.info("Accessing AI endpoint")
+        // Provide a simple GET endpoint for /ai to avoid 404 and show usage
+        get {
+            call.respond(
+                message = "AI endpoint is live. Use POST /ai/query with form parameter 'userPrompt' to query the AI.",
+                status = HttpStatusCode.OK
+            )
+        }
         post("/query") {
-            val apiKey = try {
-                Config.getRequiredProperty(GEMINI_API_KEY)
-            } catch (e: IllegalStateException) {
-                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "GEMINI_API_KEY not found in local.properties"))
-                return@post
-            }
+            val apiKey = Config.getProperty(OPEN_AI_API_KEY)
+                ?: System.getenv(OPEN_AI_API_KEY)
+                ?: System.getProperty(OPEN_AI_API_KEY)
             val params = call.receiveParameters()
             val userPrompt = params[USER_PROMPT_KEY] ?: ""
 
             try {
                 val agent = AIAgent(
-                    executor = simpleGoogleAIExecutor(apiKey),
+                    executor = simpleOpenAIExecutor(apiKey),
                     systemPrompt = SYSTEM_PROMPT,
-                    llmModel = GoogleModels.Gemini2_0Flash001,
+                    llmModel = OpenAIModels.Chat.GPT4_1,
                     toolRegistry = ToolRegistry {
                         tool(SayToUser)
                         tool(PokemonInfoTool(pokemonApiService = pokemonService))
                     }
                 )
-                val result = agent.runAndGetResult(userPrompt)
+                val result = agent.run(userPrompt)
                 call.respondText(result.toString(), ContentType.Application.Json)
                 // Try to parse the result as JSON, fallback to error if not valid
 //                try {
