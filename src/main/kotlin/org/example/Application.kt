@@ -1,11 +1,13 @@
 package org.example
 
+import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import kotlinx.serialization.json.Json
+import org.example.auth.service.UserServiceImpl
 import org.example.blog.service.BlogApiServiceImpl
 import org.example.config.Config
 import org.example.pokemon.service.PokemonService
@@ -37,9 +39,11 @@ private val supabase by lazy {
         supabaseKey = SUPABASE_KEY
     ) {
         install(Postgrest)
+        install(Auth)
     }
 }
 private val blogApiService by lazy { BlogApiServiceImpl(supabase) }
+private val userService by lazy { UserServiceImpl(supabase) }
 
 
 fun Application.module() {
@@ -52,7 +56,8 @@ fun Application.module() {
     configureRouting(
         pokemonService = pokemonService,
         todoService = todoService,
-        blogApiService = blogApiService
+        blogApiService = blogApiService,
+        userService = userService
     )
 }
 

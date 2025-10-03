@@ -10,6 +10,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.example.auth.configureAuthRouting
+import org.example.auth.service.UserService
 import org.example.blog.configureBlogRouting
 import org.example.blog.service.BlogApiService
 import org.example.config.Config
@@ -34,13 +36,15 @@ private val logger = LoggerFactory.getLogger("Routing")
 internal fun Application.configureRouting(
     pokemonService: PokemonService,
     todoService: TodoService,
-    blogApiService: BlogApiService
+    blogApiService: BlogApiService,
+    userService: UserService
 ) {
     routing {
         configureDefaultRouting()
         configureAIRouting(pokemonService = pokemonService)
         configureTodoRouting(todoService = todoService)
         configureBlogRouting(blogApiService = blogApiService)
+        configureAuthRouting(userService = userService)
     }
 }
 

@@ -15,6 +15,8 @@ dependencies {
     // Ktor
     implementation("io.ktor:ktor-server-core-jvm:3.2.0")
     implementation("io.ktor:ktor-server-netty-jvm:3.2.0")
+    implementation("io.ktor:ktor-server-auth:3.2.0")
+    implementation("io.ktor:ktor-server-auth-jwt:3.2.0")
     implementation("io.ktor:ktor-server-content-negotiation-jvm:3.2.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.2.0")
 
@@ -34,6 +36,15 @@ dependencies {
     implementation("ai.koog:koog-agents:0.4.1") {
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-datetime")
     }
+
+    // Arrow-kt (Functional Programming)
+    implementation(platform("io.arrow-kt:arrow-stack:1.2.1"))
+    implementation("io.arrow-kt:arrow-core")
+    implementation("io.arrow-kt:arrow-fx-coroutines")
+    implementation("io.arrow-kt:arrow-optics")
+
+    implementation("org.mindrot:jbcrypt:0.4")
+
 
     // Supabase
     implementation(platform("io.github.jan-tennert.supabase:bom:3.2.2"))
