@@ -20,6 +20,9 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:3.2.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.2.0")
 
+    // JWT
+    implementation("com.auth0:java-jwt:4.4.0")
+
     // Kotlin Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.8.1")

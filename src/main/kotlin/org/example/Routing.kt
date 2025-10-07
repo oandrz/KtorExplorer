@@ -19,6 +19,7 @@ import org.example.org.example.tools.PokemonInfoTool
 import org.example.org.util.AIPostParamsKey.USER_PROMPT_KEY
 import org.example.pokemon.service.PokemonService
 import org.example.todo.TodoService
+import org.example.user.configureUserRouting
 import org.slf4j.LoggerFactory
 
 private const val GEMINI_API_KEY = "GEMINI_API_KEY"
@@ -45,6 +46,7 @@ internal fun Application.configureRouting(
         configureTodoRouting(todoService = todoService)
         configureBlogRouting(blogApiService = blogApiService)
         configureAuthRouting(userService = userService)
+        configureUserRouting()
     }
 }
 

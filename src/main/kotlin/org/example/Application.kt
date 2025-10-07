@@ -50,6 +50,7 @@ fun Application.module() {
     // Log application start
     logger.info("Starting application...")
     configureSerialization()
+    configureAuthentication()
     monitor.subscribe(ApplicationStopping) {
         pokemonService.close()
     }
@@ -59,6 +60,12 @@ fun Application.module() {
         blogApiService = blogApiService,
         userService = userService
     )
+}
+
+private fun Application.configureAuthentication() {
+    org.example.auth.JwtConfig.run {
+        configureAuth(supabase)
+    }
 }
 
 private fun Application.configureSerialization() {
