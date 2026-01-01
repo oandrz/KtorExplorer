@@ -13,8 +13,11 @@ internal interface BlogApiService {
 
 private const val TABLE_NAME = "blog"
 class BlogApiServiceImpl(private val supabaseClient: SupabaseClient) : BlogApiService {
+
     override suspend fun getBlogPosts(): List<BlogPost> {
-        return emptyList()
+        val result = supabaseClient.from(TABLE_NAME).select().decodeList<BlogPost>()
+
+        return result.ifEmpty { emptyList() }
     }
 
     override suspend fun insertBlogPost(form: BlogPostForm): Boolean {
@@ -23,7 +26,6 @@ class BlogApiServiceImpl(private val supabaseClient: SupabaseClient) : BlogApiSe
         ) {
             select()
         }.decodeList<BlogPost>().firstOrNull { it.title == form.title }
-        println("testing andre the result after insert is ${result.toString()}")
         return result != null
     }
 }
