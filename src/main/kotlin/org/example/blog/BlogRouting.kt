@@ -4,15 +4,17 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.datetime.Instant
+import org.example.auth.ErrorResponse
 import org.example.blog.model.BlogPostForm
 import org.example.blog.model.BlogPostResponse
 import org.example.blog.model.UpdateBlogPostRequest
 import org.example.blog.service.BlogApiService
 import org.slf4j.LoggerFactory
 
+/*
+* Exercise from https://roadmap.sh/backend/project-ideas#:~:text=let%E2%80%99s%20get%20started!-,1.%20Personal%20Blogging%20Platform%20API,-Difficulty%3A%20Easy
+* */
 private val logger = LoggerFactory.getLogger("Blog")
 
 internal fun Routing.configureBlogRouting(blogApiService: BlogApiService) {
@@ -22,11 +24,9 @@ internal fun Routing.configureBlogRouting(blogApiService: BlogApiService) {
             try {
                 val publishedDate = call.request.queryParameters["publishedDate"]
                 logger.debug("testing andre received published date: $publishedDate")
-                val posts = withContext(Dispatchers.IO) {
-                    blogApiService.getBlogPosts(
-                        publishedDate = publishedDate?.let { Instant.parse(it) }
-                    )
-                }
+                val posts = blogApiService.getBlogPosts(
+                    publishedDate = publishedDate?.let { Instant.parse(it) }
+                )
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = posts
@@ -109,6 +109,23 @@ internal fun Routing.configureBlogRouting(blogApiService: BlogApiService) {
                     status = HttpStatusCode.InternalServerError,
                     message = "Error update blog post"
                 )
+            }
+        }
+
+        delete("/post/{id}") {
+            try {
+                val id: Int = call.parameters["id"]?.toIntOrNull()
+                    ?: throw IllegalArgumentException("Blog post ID is required")
+                val isSuccess = blogApiService.deleteBlogPost(id)
+
+                if (isSuccess) {
+                    call.respond(HttpStatusCode.OK, BlogPostResponse(message = "Blog post deleted successfully"))
+                } else {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse("Blog post not found"))
+                }
+            }catch (e: Exception) {
+                logger.error("Error deleting blog post", e)
+                call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Error deleting blog post"))
             }
         }
     }

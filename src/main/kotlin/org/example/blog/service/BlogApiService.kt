@@ -12,6 +12,7 @@ internal interface BlogApiService {
     suspend fun getBlogPosts(publishedDate: Instant?, requestId: Int? = null): List<BlogPost>
     suspend fun insertBlogPost(form: BlogPostForm): Boolean
     suspend fun updateBlogPost(id: Int, form: UpdateBlogPostRequest): Boolean
+    suspend fun deleteBlogPost(id: Int): Boolean
 }
 
 private const val TABLE_NAME = "blog"
@@ -51,6 +52,16 @@ class BlogApiServiceImpl(private val supabaseClient: SupabaseClient) : BlogApiSe
             form.content?.let { content -> set("content", content) }
             form.publishedDate?.let { date -> set("published_date", date) }
         }) {
+            filter { eq("id", id) }
+            select()
+        }
+            .decodeSingleOrNull<BlogPost>()
+
+        return result != null
+    }
+
+    override suspend fun deleteBlogPost(id: Int): Boolean {
+        val result = supabaseClient.from(TABLE_NAME).delete {
             filter { eq("id", id) }
             select()
         }
